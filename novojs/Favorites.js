@@ -1,19 +1,4 @@
-//classe que vai conter a lógica de capturar os usuários no Github
-
-export class GithubUser {
-	static search(username) {
-		const endpoint = `https://api.github.com/users/${username}`
-
-		return fetch(endpoint)
-			.then((data) => data.json())
-			.then(({ login, name, public_repos, followers }) => ({
-				login,
-				name,
-				public_repos,
-				followers,
-			}))
-	}
-}
+import { GithubUser } from './GithubUser.js'
 
 // classe que vai conter a lógica dos dados
 // como os dados serão estruturados
@@ -35,8 +20,12 @@ export class Favorites {
 
 	async add(username) {
 		try {
-			const user = await GithubUser.search(username)
+			const userExists = this.entries.find((entry) => entry.login === username)
+			if (userExists) {
+				throw new Error('Usuário ja Cadastrado')
+			}
 
+			const user = await GithubUser.search(username)
 			if (user.login === undefined) {
 				throw new Error('Usuário não encontrado')
 			}
@@ -78,9 +67,14 @@ export class FavoritesView extends Favorites {
 	}
 
 	update() {
-		/* 		this.removeAllTr() */
+		this.removeAllTr()
 
-		this.emptyRow()
+		if (this.entries.length == 0) {
+			this.emptyRow()
+		} else {
+			this.removeEmptyRow()
+		}
+
 		this.entries.forEach((user) => {
 			const row = this.createRow()
 
@@ -129,8 +123,8 @@ export class FavoritesView extends Favorites {
 
 	//Função que removerá as linhas da tabela
 	removeAllTr() {
-		const validation = localStorage.getItem('@newgithub-favorites:').length
-
+		/* 		const validation = localStorage.getItem('@newgithub-favorites:').length
+		 */
 		this.tbody = this.root.querySelector('table tbody')
 		this.tbody.querySelectorAll('tr').forEach((tr) => {
 			tr.remove()
@@ -143,13 +137,22 @@ export class FavoritesView extends Favorites {
 
 		createImg.innerHTML = `
     <div class="emptyTable">
-      <div>
+
       <img src="./assets/Estrela.svg" alt="">
-      <p>Adicione alguém a sua lista !</p>
-      </div>
+      <p>Nenhum favorito ainda</p>
+
     </div>
     `
 
 		CreateTable.append(createImg)
+	}
+
+	removeEmptyRow() {
+		const removeEmptyRow = this.root.querySelector('table div')
+		if (removeEmptyRow == undefined) {
+			return
+		} else {
+			removeEmptyRow.remove()
+		}
 	}
 }
