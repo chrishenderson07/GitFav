@@ -17,6 +17,6 @@
   </a>
 </p>
 
-[<h2>🔗Abrir e Rodar o projeto🔗</h2>](https://git-fav-nu.vercel.app/)
+[🔗Abrir e Rodar o projeto🔗](https://git-fav-nu.vercel.app/)
 
 ![Imagem de capa do SPA Universe](./assets/capa.png)
